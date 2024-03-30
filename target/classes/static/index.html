@@ -17,22 +17,38 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 -->
 <html>
     <head>
-        <title>TODO supply a title</title>
+        <title>Collab Paint</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <script src="/webjars/jquery/jquery.min.js"></script>
         <script src="/webjars/sockjs-client/sockjs.min.js"></script>
         <script src="/webjars/stomp-websocket/stomp.min.js"></script>
         <script src="/app.js"></script>
-
     </head>
+    <body>
+        <label for="drawingId">ID del Dibujo:</label>
+        <input type="text" id="drawingId" name="drawingId">
+        <button id="connectButton">Conectarse</button>
+        <canvas id="canvas" width="800" height="600" style="border:1px solid #000000;"></canvas>
+        
+        <script>
+            document.getElementById('connectButton').addEventListener('click', function() {
+                var drawingId = document.getElementById('drawingId').value;
+                if (drawingId) {
+                    app.connectAndSubscribe(drawingId);
+                } else {
+                    alert('Por favor, ingrese un identificador de dibujo válido.');
+                }
+            });
 
-
-    
-    <body onload="app.init()">
-        X:<input id="x" type="number"/>
-        Y:<input id="y" type="number"/>        
-        <button onclick="app.publishPoint($('#x').val(),$('#y').val())">Send point</button>
-        <canvas id="canvas" width="800" height="600"></canvas>
+            document.getElementById('canvas').addEventListener('click', function(evt) {
+                if (app.isConnected()) {
+                    var mousePos = app.getMousePosition(evt);
+                    app.publishPoint(mousePos.x, mousePos.y);
+                } else {
+                    alert("Por favor, conectarse a un ID de dibujo primero.");
+                }
+            });
+        </script>
     </body>
 </html>
